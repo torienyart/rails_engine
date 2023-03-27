@@ -177,13 +177,26 @@
           null
         ]
       },
+      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/spec/factories/items.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          1,
+          11,
+          11,
+          11,
+          null,
+          null
+        ]
+      },
       "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/spec/factories/merchants.rb": {
         "lines": [
           1,
           null,
           1,
           1,
-          6,
+          1,
           null,
           null
         ]
@@ -199,6 +212,7 @@
           1,
           1,
           1,
+          1,
           null,
           null,
           null
@@ -211,7 +225,7 @@
           null
         ]
       },
-      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/models/merchant.rb": {
+      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/models/item.rb": {
         "lines": [
           1,
           null,
@@ -225,9 +239,13 @@
           null
         ]
       },
-      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/controllers/api/v1/merchants_controller.rb": {
+      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/controllers/api/v1/items_controller.rb": {
         "lines": [
           1,
+          1,
+          1,
+          null,
+          null,
           1,
           1,
           null,
@@ -240,7 +258,7 @@
           null
         ]
       },
-      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/serializers/merchant_serializer.rb": {
+      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/serializers/item_serializer.rb": {
         "lines": [
           1,
           1,
@@ -249,6 +267,6 @@
         ]
       }
     },
-    "timestamp": 1679947618
+    "timestamp": 1679956619
   }
 }
