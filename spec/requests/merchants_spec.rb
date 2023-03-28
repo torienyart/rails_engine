@@ -45,6 +45,14 @@ describe 'can create a merchants response' do
     expect(json[:errors]).to eq(["Couldn't find Merchant with 'id'=8938772"])
   end
 
+  it "error message when id is not integer" do
+    get "/api/v1/merchants/'3'"
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(404)
+    expect(json[:errors]).to eq(["Couldn't find Merchant with 'id'='3'"])
+  end
+
   it "GET /merchants/:id/items" do
     get api_v1_merchant_items_path(@m1)
     json = JSON.parse(response.body, symbolize_names: true)

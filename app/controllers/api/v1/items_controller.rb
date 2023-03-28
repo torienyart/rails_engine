@@ -36,6 +36,16 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+  def update
+    item = Item.find(params[:id])
+    if item.update(item_params)
+      serialized_item = render json: ItemSerializer.new(item)
+    else
+      serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
+      render json: serialized_errors, status: :unprocessable_entity
+    end
+  end
+
   # def error_messager(to_render)
   #   begin
   #     to_render

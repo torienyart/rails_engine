@@ -10,6 +10,7 @@ describe 'can create an items response' do
     @i5 = create(:item, merchant_id: @m1.id)
     @i6 = attributes_for(:item, merchant_id: @m1.id)
     @i7 = attributes_for(:item, merchant_id: @m1.id, :chuck_norris => "Chuck Norris don't give a shit")
+    @i8 = attributes_for(:item, merchant_id: @m1.id)
 
   end
 
@@ -47,29 +48,77 @@ describe 'can create an items response' do
     expect(json[:errors]).to eq(["Couldn't find Item with 'id'=8938772"])
   end
 
-  it "POST /items" do
-    post "/api/v1/items", params: @i6#{ :name => @i6.name, :description => @i6.description, :unit_price => @i6.unit_price }
+  it "error message when id is not integer" do
+    get "/api/v1/items/'3'"
     json = JSON.parse(response.body, symbolize_names: true)
 
-    expect(response.status).to eq(200)
-    expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
-    expect(json[:name]).to include(@i6[:name])
+    expect(response.status).to eq(404)
+    expect(json[:errors]).to eq(["Couldn't find Item with 'id'='3'"])
+  end
+  
+  describe 'create an item' do
+    it "POST /items" do
+      post "/api/v1/items", params: @i6
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json[:name]).to include(@i6[:name])
+    end
+
+    it "can return an error response when the item was not created" do
+      post "/api/v1/items", params: { :name => @i6[:name], :description => @i6[:description] }
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(422)
+      expect(json[:errors]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
+    end
+
+    it "can ignore attributes that are not allowed" do
+      post "/api/v1/items", params: @i7
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json.keys).not_to include(:chuck_norris)
+      expect(json[:name]).to include(@i7[:name])
+    end
   end
 
-  it "can return an error response when the item was not created" do
-    post "/api/v1/items", params: { :name => @i6[:name], :description => @i6[:description] }
-    json = JSON.parse(response.body, symbolize_names: true)
-    expect(response.status).to eq(422)
-    expect(json[:errors]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
-  end
+  describe 'update an item' do
+    it "PUT /items/:id" do
+      put "/api/v1/items/#{@i5.id}", params: @i8
+      json = JSON.parse(response.body, symbolize_names: true)
 
-  it "can ignore attributes that are not allowed" do
-    post "/api/v1/items", params: @i7
-    json = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(200)
+      expect(json[:data][:attributes].keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json[:data][:attributes][:name]).to eq(@i8[:name])
+      expect(json[:data][:attributes][:description]).to eq(@i8[:description])
+      expect(json[:data][:attributes][:unit_price]).to eq(@i8[:unit_price])
+    end
 
-    expect(response.status).to eq(200)
-    expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
-    expect(json.keys).not_to include(:chuck_norris)
-    expect(json[:name]).to include(@i7[:name])
+    it "can return an error response when the item was not updated" do
+      put "/api/v1/items/#{@i5.id}", params: { :unit_price => 'twenty'}
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(422)
+      expect(json[:errors]).to eq(["Unit price is not a number"])
+    end
+
+    it "can return an error response when the merchant id is bad" do
+      put "/api/v1/items/#{@i5.id}", params: { :merchant_id => 999999 }
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(422)
+      expect(json[:errors]).to eq(["Merchant must exist"])
+    end
+
+    it "can ignore attributes that are not allowed" do
+      put "/api/v1/items/#{@i5.id}", params: @i7
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data][:attributes].keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json[:data][:attributes].keys).not_to include(:chuck_norris)
+      expect(json[:data][:attributes][:name]).to include(@i7[:name])
+    end
   end
 end
