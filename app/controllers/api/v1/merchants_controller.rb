@@ -1,9 +1,19 @@
 class Api::V1::MerchantsController < ApplicationController
   def index
-    render json: MerchantSerializer.new(Merchant.all)
+    begin
+      render json: MerchantSerializer.new(Merchant.all)
+    rescue ActiveRecord::RecordNotFound => error
+      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+      render json: serialized_error, status: :not_found
+    end
   end
 
   def show
-    render json: MerchantSerializer.new(Merchant.find(params[:id]))
+    begin
+      render json: MerchantSerializer.new(Merchant.find(params[:id]))
+    rescue ActiveRecord::RecordNotFound => error
+      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+      render json: serialized_error, status: :not_found
+    end
   end
 end

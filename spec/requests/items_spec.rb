@@ -40,6 +40,13 @@ describe 'can create an items response' do
     expect(json[:data][:attributes][:unit_price]).to eq(@i1.unit_price)
   end
 
+  it "error message when id not found" do
+    get '/api/v1/items/8938772'
+    json = JSON.parse(response.body, symbolize_names: true)
+    expect(response.status).to eq(404)
+    expect(json[:errors]).to eq(["Couldn't find Item with 'id'=8938772"])
+  end
+
   it "POST /items" do
     post "/api/v1/items", params: @i6#{ :name => @i6.name, :description => @i6.description, :unit_price => @i6.unit_price }
     json = JSON.parse(response.body, symbolize_names: true)
@@ -52,7 +59,6 @@ describe 'can create an items response' do
   it "can return an error response when the item was not created" do
     post "/api/v1/items", params: { :name => @i6[:name], :description => @i6[:description] }
     json = JSON.parse(response.body, symbolize_names: true)
-
     expect(response.status).to eq(422)
     expect(json[:errors]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
   end

@@ -38,6 +38,13 @@ describe 'can create a merchants response' do
     expect(json[:data][:attributes][:name]).to eq(@m1.name)
   end
 
+  it "error message when id not found" do
+    get '/api/v1/merchants/8938772'
+    json = JSON.parse(response.body, symbolize_names: true)
+    expect(response.status).to eq(404)
+    expect(json[:errors]).to eq(["Couldn't find Merchant with 'id'=8938772"])
+  end
+
   it "GET /merchants/:id/items" do
     get api_v1_merchant_items_path(@m1)
     json = JSON.parse(response.body, symbolize_names: true)
@@ -49,5 +56,12 @@ describe 'can create a merchants response' do
     expect(json[:data].first[:attributes][:name]).to eq(@i1.name)
     expect(json[:data].first[:attributes][:description]).to eq(@i1.description)
     expect(json[:data].first[:attributes][:unit_price]).to eq(@i1.unit_price)
+  end
+
+  it "error message when id not found" do
+    get '/api/v1/merchants/8938772/items'
+    json = JSON.parse(response.body, symbolize_names: true)
+    expect(response.status).to eq(404)
+    expect(json[:errors]).to eq(["Couldn't find Merchant with 'id'=8938772"])
   end
 end

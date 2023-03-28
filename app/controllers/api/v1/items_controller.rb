@@ -1,14 +1,29 @@
 class Api::V1::ItemsController < ApplicationController
   def index
-    if params[:merchant_id]
-      render json: ItemSerializer.new(Merchant.find(params[:merchant_id]).items)
-    else    
-      render json: ItemSerializer.new(Item.all)
+     if params[:merchant_id]
+      begin
+        render json: ItemSerializer.new(Merchant.find(params[:merchant_id]).items)
+      rescue ActiveRecord::RecordNotFound => error
+        serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+        render json: serialized_error, status: :not_found
+      end
+    else  
+      begin
+        render json: ItemSerializer.new(Item.all)      
+      rescue ActiveRecord::RecordNotFound => error
+        serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+        render json: serialized_error, status: :not_found
+      end
     end
   end
 
   def show
-    render json: ItemSerializer.new(Item.find(params[:id]))
+    begin
+      render json: ItemSerializer.new(Item.find(params[:id]))
+    rescue ActiveRecord::RecordNotFound => error
+      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+      render json: serialized_error, status: :not_found
+    end
   end
 
   def create
@@ -16,10 +31,19 @@ class Api::V1::ItemsController < ApplicationController
     if item.save
       serialized_item = render json: ItemSerializer.new(item).serializable_hash[:data][:attributes]
     else
-      serialized_errors = ErrorSerializer.new(item).serializable_hash[:data][:attributes]
+      serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
       render json: serialized_errors, status: :unprocessable_entity
     end
   end
+
+  # def error_messager(to_render)
+  #   begin
+  #     to_render
+  #   rescue ActiveRecord::RecordNotFound => error
+  #     serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+  #     render json: serialized_error, status: :not_found
+  #   end
+  # end
 
   private
 

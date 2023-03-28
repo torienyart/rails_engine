@@ -1,12 +1,10 @@
 class ErrorSerializer
   include JSONAPI::Serializer
   attribute :message do
-    "Your item couldn't be created."
+    "I'm sorry, but this isn't working.... is't not you... its me...."
   end
 
-  attribute :errors do |item|
-    errors = item.errors.map do |error|
-      error.full_message
-    end
+  attribute :errors do |error|
+    [error.message]
   end
 end
