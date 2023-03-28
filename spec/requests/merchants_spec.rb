@@ -12,8 +12,8 @@ describe 'can create a merchants response' do
     @i3 = create(:item, merchant_id: @m1.id)
     @i4 = create(:item, merchant_id: @m1.id)
     @i5 = create(:item, merchant_id: @m1.id)
-
-
+    @i6 = create(:item, merchant_id: @m2.id)
+    @i7 = create(:item, merchant_id: @m2.id)
   end
 
   it "GET /merchants" do
@@ -44,6 +44,7 @@ describe 'can create a merchants response' do
 
     expect(response.status).to eq(200)
     expect(json[:data]).to be_a(Array)
+    require 'pry'; binding.pry
     expect(json[:data].first[:id]).to eq("#{@i1.id}")
     expect(json[:data].first[:type]).to eq('item')
     expect(json[:data].first[:attributes][:name]).to eq(@i1.name)
