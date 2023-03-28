@@ -9,6 +9,8 @@ describe 'can create an items response' do
     @i4 = create(:item, merchant_id: @m1.id)
     @i5 = create(:item, merchant_id: @m1.id)
     @i6 = attributes_for(:item, merchant_id: @m1.id)
+    @i7 = attributes_for(:item, merchant_id: @m1.id, :chuck_norris => "Chuck Norris don't give a shit")
+
   end
 
   it "GET /items" do
@@ -53,5 +55,15 @@ describe 'can create an items response' do
 
     expect(response.status).to eq(200)
     expect(json[:error]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
+  end
+
+  it "can ignore attributes that are not allowed" do
+    post "/api/v1/items", params: @i7
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(200)
+    expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
+    expect(json.keys).not_to include(:chuck_norris)
+    expect(json[:name]).to include(@i7[:name])
   end
 end

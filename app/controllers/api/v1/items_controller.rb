@@ -9,7 +9,6 @@ class Api::V1::ItemsController < ApplicationController
 
   def create
     item = Item.new(item_params)
-
     if item.save
       serialized_item = render json: ItemSerializer.new(item).serializable_hash[:data][:attributes]
     else
