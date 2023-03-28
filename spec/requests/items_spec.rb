@@ -53,8 +53,8 @@ describe 'can create an items response' do
     post "/api/v1/items", params: { :name => @i6[:name], :description => @i6[:description] }
     json = JSON.parse(response.body, symbolize_names: true)
 
-    expect(response.status).to eq(200)
-    expect(json[:error]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
+    expect(response.status).to eq(422)
+    expect(json[:errors]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
   end
 
   it "can ignore attributes that are not allowed" do

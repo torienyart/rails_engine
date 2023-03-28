@@ -272,6 +272,9 @@
           2,
           null,
           1,
+          1,
+          null,
+          null,
           null,
           null,
           null,
@@ -296,8 +299,24 @@
           1,
           null
         ]
+      },
+      "/Users/torienyart/Documents/TORI ENYART/Turing/3mod/projects/rails_engine/app/serializers/error_serializer.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          4,
+          null,
+          null,
+          null
+        ]
       }
     },
-    "timestamp": 1679969108
+    "timestamp": 1679970353
   }
 }

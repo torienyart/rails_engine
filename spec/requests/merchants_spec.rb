@@ -7,6 +7,12 @@ describe 'can create a merchants response' do
     @m3 = create(:merchant)
     @m4 = create(:merchant)
     @m5 = create(:merchant)
+    @i1 = create(:item, merchant_id: @m1.id)
+    @i2 = create(:item, merchant_id: @m1.id)
+    @i3 = create(:item, merchant_id: @m1.id)
+    @i4 = create(:item, merchant_id: @m1.id)
+    @i5 = create(:item, merchant_id: @m1.id)
+
 
   end
 
@@ -30,5 +36,18 @@ describe 'can create a merchants response' do
     expect(json[:data][:id]).to eq("#{@m1.id}")
     expect(json[:data][:type]).to eq('merchant')
     expect(json[:data][:attributes][:name]).to eq(@m1.name)
+  end
+
+  it "GET /merchants/:id/items" do
+    get api_v1_merchant_items_path(@m1)
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(200)
+    expect(json[:data]).to be_a(Array)
+    expect(json[:data].first[:id]).to eq("#{@i1.id}")
+    expect(json[:data].first[:type]).to eq('item')
+    expect(json[:data].first[:attributes][:name]).to eq(@i1.name)
+    expect(json[:data].first[:attributes][:description]).to eq(@i1.description)
+    expect(json[:data].first[:attributes][:unit_price]).to eq(@i1.unit_price)
   end
 end

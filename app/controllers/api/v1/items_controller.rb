@@ -12,7 +12,10 @@ class Api::V1::ItemsController < ApplicationController
     if item.save
       serialized_item = render json: ItemSerializer.new(item).serializable_hash[:data][:attributes]
     else
-      render json: {error: item.errors.full_messages}
+      serialized_errors = ErrorSerializer.new(item).serializable_hash[:data][:attributes]
+      render json: serialized_errors, status: :unprocessable_entity
+      # render json: serialized_errors, status: :unprocessable_entity
+      # render json: {error: item.errors.full_messages}, status: :unprocessable_entity
     end
   end
 
