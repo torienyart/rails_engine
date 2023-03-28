@@ -44,7 +44,6 @@ describe 'can create a merchants response' do
 
     expect(response.status).to eq(200)
     expect(json[:data]).to be_a(Array)
-    require 'pry'; binding.pry
     expect(json[:data].first[:id]).to eq("#{@i1.id}")
     expect(json[:data].first[:type]).to eq('item')
     expect(json[:data].first[:attributes][:name]).to eq(@i1.name)
