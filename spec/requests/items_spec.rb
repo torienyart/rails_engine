@@ -2,11 +2,13 @@ require 'rails_helper'
 
 describe 'can create an items response' do
   before :each do
-    @i1 = create(:item)
-    @i2 = create(:item)
-    @i3 = create(:item)
-    @i4 = create(:item)
-    @i5 = create(:item)
+    @m1 = create(:merchant)
+    @i1 = create(:item, merchant_id: @m1.id)
+    @i2 = create(:item, merchant_id: @m1.id)
+    @i3 = create(:item, merchant_id: @m1.id)
+    @i4 = create(:item, merchant_id: @m1.id)
+    @i5 = create(:item, merchant_id: @m1.id)
+    @i6 = attributes_for(:item, merchant_id: @m1.id)
   end
 
   it "GET /items" do
@@ -34,5 +36,22 @@ describe 'can create an items response' do
     expect(json[:data][:attributes][:name]).to eq(@i1.name)
     expect(json[:data][:attributes][:description]).to eq(@i1.description)
     expect(json[:data][:attributes][:unit_price]).to eq(@i1.unit_price)
+  end
+
+  it "POST /items" do
+    post "/api/v1/items", params: @i6#{ :name => @i6.name, :description => @i6.description, :unit_price => @i6.unit_price }
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(200)
+    expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
+    expect(json[:name]).to include(@i6[:name])
+  end
+
+  it "can return an error response when the item was not created" do
+    post "/api/v1/items", params: { :name => @i6[:name], :description => @i6[:description] }
+    json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(200)
+    expect(json[:error]).to eq(["Unit price can't be blank", "Merchant can't be blank", "Unit price is not a number", "Merchant must exist"])
   end
 end
