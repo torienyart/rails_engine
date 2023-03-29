@@ -37,12 +37,18 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    item = Item.find(params[:id])
-    if item.update(item_params)
-      serialized_item = render json: ItemSerializer.new(item)
+    begin
+      item = Item.find(params[:id])
+    rescue ActiveRecord::RecordNotFound => error
+      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
+      render json: serialized_error, status: :not_found
     else
-      serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
-      render json: serialized_errors, status: :unprocessable_entity
+      if item.update(item_params)
+        serialized_item = render json: ItemSerializer.new(item)
+      else
+        serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
+        render json: serialized_errors, status: :not_found
+      end
     end
   end
 

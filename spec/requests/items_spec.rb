@@ -102,15 +102,31 @@ describe 'can create an items response' do
     it "can return an error response when the item was not updated" do
       patch "/api/v1/items/#{@i5.id}", params: { :unit_price => 'twenty'}
       json = JSON.parse(response.body, symbolize_names: true)
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(404)
       expect(json[:errors]).to eq(["Unit price is not a number"])
+    end
+
+    it "can return an error response when the item id doesn't exist" do
+      patch "/api/v1/items/999999", params: @i8
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(404)
+      expect(json[:errors]).to eq(["Couldn't find Item with 'id'=999999"])
+    end
+
+    it "error message when id is not integer" do
+      patch "/api/v1/items/'3'", params: @i8
+      json = JSON.parse(response.body, symbolize_names: true)
+  
+      expect(response.status).to eq(404)
+      expect(json[:errors]).to eq(["Couldn't find Item with 'id'='3'"])
     end
 
     it "can return an error response when the merchant id is bad" do
       patch "/api/v1/items/#{@i5.id}", params: { :merchant_id => 999999 }
       json = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response.status).to eq(422)
+      expect(response.status).to eq(404)
       expect(json[:errors]).to eq(["Merchant must exist"])
     end
 
