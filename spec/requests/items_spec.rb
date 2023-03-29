@@ -64,9 +64,9 @@ describe 'can create an items response' do
       post "/api/v1/items", params: @i6
       json = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response.status).to eq(200)
-      expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
-      expect(json[:name]).to include(@i6[:name])
+      expect(response.status).to eq(201)
+      expect(json[:data][:attributes].keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json[:data][:attributes][:name]).to include(@i6[:name])
     end
 
     it "can return an error response when the item was not created" do
@@ -80,10 +80,10 @@ describe 'can create an items response' do
       post "/api/v1/items", params: @i7
       json = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response.status).to eq(200)
-      expect(json.keys).to include(:name, :description, :unit_price, :merchant_id)
-      expect(json.keys).not_to include(:chuck_norris)
-      expect(json[:name]).to include(@i7[:name])
+      expect(response.status).to eq(201)
+      expect(json[:data][:attributes].keys).to include(:name, :description, :unit_price, :merchant_id)
+      expect(json[:data][:attributes].keys).not_to include(:chuck_norris)
+      expect(json[:data][:attributes][:name]).to include(@i7[:name])
     end
   end
 
@@ -133,6 +133,34 @@ describe 'can create an items response' do
       expect(response.body).to be_empty
 
       expect(@i5.invoices).to eq([])
+    end
+  end
+
+  describe "can get an item's merchant" do
+    it 'api/v1/items/:id/merchant' do
+      get "/api/v1/items/#{@i5.id}/merchant"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data][:id]).to eq("#{@m1.id}")
+      expect(json[:data][:type]).to eq('merchant')
+      expect(json[:data][:attributes][:name]).to eq(@m1.name)
+    end
+
+    it "error message when id not found" do
+      get "/api/v1/items/8903457/merchant"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(404)
+      expect(json[:errors]).to eq(["Couldn't find Item with 'id'=8903457"])
+    end
+
+    it "error message when id is not integer" do
+      get "/api/v1/items/'3'/merchant"
+      json = JSON.parse(response.body, symbolize_names: true)
+  
+      expect(response.status).to eq(404)
+      expect(json[:errors]).to eq(["Couldn't find Item with 'id'='3'"])
     end
   end
 end

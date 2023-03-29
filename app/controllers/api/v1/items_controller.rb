@@ -29,7 +29,7 @@ class Api::V1::ItemsController < ApplicationController
   def create
     item = Item.new(item_params)
     if item.save
-      serialized_item = render json: ItemSerializer.new(item).serializable_hash[:data][:attributes]
+      render json: ItemSerializer.new(item).serializable_hash, status: :created
     else
       serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
       render json: serialized_errors, status: :unprocessable_entity
