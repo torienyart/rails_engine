@@ -8,7 +8,7 @@ class ErrorSerializer
     [error.message]
   end
 
-  def self.undefined_merchant
+  def self.undefined_object
     {data: {}}
   end
 

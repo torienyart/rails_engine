@@ -20,5 +20,4 @@ RSpec.describe Merchant, type: :model do
       expect(Merchant.name_search('Store')).to eq(@m8)
     end
   end
-
 end

@@ -180,5 +180,48 @@ describe 'can create an items response' do
     end
   end
 
-  # describe "it can find an item"
+  describe "it can find an item" do
+    before :each do
+      Item.destroy_all
+      @m1 = create(:merchant)
+      @i1 = create(:item, :name => 'Turing Shirt', unit_price: 55, merchant_id: @m1.id)
+      @i2 = create(:item, :name => 'Cohort Ring', unit_price: 50, merchant_id: @m1.id)
+      @i3 = create(:item, :name => 'Zoom Background', unit_price: 5, merchant_id: @m1.id)
+    end
+
+    it 'can find items by name' do
+      get "/api/v1/items/find_all?name=ring"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data].count).to eq(2)
+      expect(json[:data].first[:id]).to eq("#{@i2.id}")
+      expect(json[:data].first[:type]).to eq('item')
+      expect(json[:data].first[:attributes][:name]).to eq(@i2.name)
+      expect(json[:data].first[:attributes][:description]).to eq(@i2.description)
+      expect(json[:data].first[:attributes][:unit_price]).to eq(@i2.unit_price)
+    end
+
+    it "can return 200 status with undefined error if result doesn't exist" do
+      get '/api/v1/items/find_all?name=beepboopbop'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data]).to eq([])
+    end
+
+    it 'can find items by min price' do
+      get "/api/v1/items/find_all?min_price=50.00"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data].count).to eq(2)
+      expect(json[:data].first[:id]).to eq("#{@i2.id}")
+      expect(json[:data].first[:type]).to eq('item')
+      expect(json[:data].first[:attributes][:name]).to eq(@i2.name)
+      expect(json[:data].first[:attributes][:description]).to eq(@i2.description)
+      expect(json[:data].first[:attributes][:unit_price]).to eq(@i2.unit_price)
+
+    end
+  end
 end
