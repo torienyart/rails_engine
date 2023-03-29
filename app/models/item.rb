@@ -23,7 +23,7 @@ class Item < ApplicationRecord
     elsif min.present? && !max.present?
       where("unit_price >= #{min}").order(:unit_price)
     elsif max.present? && !min.present?
-      where("unit_price >= #{max}").order(:unit_price)
+      where("unit_price <= #{max}").order(:unit_price)
     end
   end
 end

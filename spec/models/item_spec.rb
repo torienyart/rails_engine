@@ -66,7 +66,7 @@ describe Item do
       expect(Item.price_search(50.00, nil)).to_not include(@i3)
     end
 
-    xit "can find items by maximum price" do
+    it "can find items by maximum price" do
       expect(Item.price_search(nil, 50.00)).to include(@i2, @i3)
       expect(Item.price_search(nil, 50.00)).to_not include(@i1)
     end

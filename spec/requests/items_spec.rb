@@ -221,7 +221,19 @@ describe 'can create an items response' do
       expect(json[:data].first[:attributes][:name]).to eq(@i2.name)
       expect(json[:data].first[:attributes][:description]).to eq(@i2.description)
       expect(json[:data].first[:attributes][:unit_price]).to eq(@i2.unit_price)
+    end
 
+    it 'can find items by max price' do
+      get "/api/v1/items/find_all?max_price=50.00"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data].count).to eq(2)
+      expect(json[:data].first[:id]).to eq("#{@i3.id}")
+      expect(json[:data].first[:type]).to eq('item')
+      expect(json[:data].first[:attributes][:name]).to eq(@i3.name)
+      expect(json[:data].first[:attributes][:description]).to eq(@i3.description)
+      expect(json[:data].first[:attributes][:unit_price]).to eq(@i3.unit_price)
     end
   end
 end
