@@ -73,14 +73,14 @@ describe 'can create a merchants response' do
     expect(json[:errors]).to eq(["Couldn't find Merchant with 'id'=8938772"])
   end
 
-  describe 'non-restful endpoints' do
+  describe 'find a merchant based on criteria' do
     before :each do
       @m6 = create(:merchant, name: 'Bags Mart')
       @m7 = create(:merchant, name: 'Shoes Mart')
       @m8 = create(:merchant, name: 'Just a Store')
     end
 
-    it 'can find a merchant based on criteria' do
+    it 'can find a merchant based on just name criteria' do
       get '/api/v1/merchants/find?name=Mart'
       json = JSON.parse(response.body, symbolize_names: true)
 
@@ -88,6 +88,14 @@ describe 'can create a merchants response' do
       expect(json[:data][:id]).to eq("#{@m6.id}")
       expect(json[:data][:type]).to eq('merchant')
       expect(json[:data][:attributes][:name]).to eq(@m6.name)
+    end
+
+    it "can return 200 status with undefined error if result doesn't exist" do
+      get '/api/v1/merchants/find?name=djdafdopciosl'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data]).to eq({})
     end
   end
 end
