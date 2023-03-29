@@ -179,4 +179,6 @@ describe 'can create an items response' do
       expect(json[:errors]).to eq(["Couldn't find Item with 'id'='3'"])
     end
   end
+
+  # describe "it can find an item"
 end
