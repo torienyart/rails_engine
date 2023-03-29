@@ -46,6 +46,12 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+  def destroy
+    item = Item.find(params[:id])
+    item.destroy_invoices
+    item.destroy
+  end
+
   # def error_messager(to_render)
   #   begin
   #     to_render

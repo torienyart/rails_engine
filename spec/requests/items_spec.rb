@@ -11,7 +11,10 @@ describe 'can create an items response' do
     @i6 = attributes_for(:item, merchant_id: @m1.id)
     @i7 = attributes_for(:item, merchant_id: @m1.id, :chuck_norris => "Chuck Norris don't give a shit")
     @i8 = attributes_for(:item, merchant_id: @m1.id)
-
+    
+    @c1 = Customer.create!
+    @iv1 = Invoice.create!(customer_id: @c1.id, merchant_id: @m1.id)
+    @ivi1 = InvoiceItem.create!(invoice_id: @iv1.id, item_id: @i5.id)
   end
 
   it "GET /items" do
@@ -86,7 +89,7 @@ describe 'can create an items response' do
 
   describe 'update an item' do
     it "PUT /items/:id" do
-      put "/api/v1/items/#{@i5.id}", params: @i8
+      patch "/api/v1/items/#{@i5.id}", params: @i8
       json = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(200)
@@ -97,14 +100,14 @@ describe 'can create an items response' do
     end
 
     it "can return an error response when the item was not updated" do
-      put "/api/v1/items/#{@i5.id}", params: { :unit_price => 'twenty'}
+      patch "/api/v1/items/#{@i5.id}", params: { :unit_price => 'twenty'}
       json = JSON.parse(response.body, symbolize_names: true)
       expect(response.status).to eq(422)
       expect(json[:errors]).to eq(["Unit price is not a number"])
     end
 
     it "can return an error response when the merchant id is bad" do
-      put "/api/v1/items/#{@i5.id}", params: { :merchant_id => 999999 }
+      patch "/api/v1/items/#{@i5.id}", params: { :merchant_id => 999999 }
       json = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(422)
@@ -112,13 +115,24 @@ describe 'can create an items response' do
     end
 
     it "can ignore attributes that are not allowed" do
-      put "/api/v1/items/#{@i5.id}", params: @i7
+      patch "/api/v1/items/#{@i5.id}", params: @i7
       json = JSON.parse(response.body, symbolize_names: true)
 
       expect(response.status).to eq(200)
       expect(json[:data][:attributes].keys).to include(:name, :description, :unit_price, :merchant_id)
       expect(json[:data][:attributes].keys).not_to include(:chuck_norris)
       expect(json[:data][:attributes][:name]).to include(@i7[:name])
+    end
+  end
+
+  describe 'delete an item' do
+    it 'DELETE /api/v1/items/:id' do
+      delete "/api/v1/items/#{@i5.id}"
+
+      expect(response.status).to eq(204)
+      expect(response.body).to be_empty
+
+      expect(@i5.invoices).to eq([])
     end
   end
 end

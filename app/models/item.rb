@@ -2,7 +2,14 @@ class Item < ApplicationRecord
   validates_presence_of :name, :description, :unit_price, :merchant_id
   validates :unit_price, numericality: { only_float: true }
 
-  has_many :invoice_items
+  has_many :invoice_items, dependent: :delete_all
   has_many :invoices, through: :invoice_items
   belongs_to :merchant
+
+  def destroy_invoices
+    invoices_to_destroy = Invoice.joins(:items).group("invoices.id").having("count(items.id) = 1")
+    invoices_to_destroy.each do |invoice|
+      invoice.destroy
+    end
+  end
 end
