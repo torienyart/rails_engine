@@ -12,4 +12,8 @@ class Item < ApplicationRecord
       invoice.destroy
     end
   end
+
+  def self.name_search(query_name)
+    where("lower(name) LIKE lower('%#{query_name}%')").order(:name)
+  end
 end

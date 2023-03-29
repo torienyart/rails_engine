@@ -42,6 +42,20 @@ describe Item do
     @i5.destroy_invoices
   
     expect(@i5.invoices).to include(@iv2)
+  end
 
+  describe 'class methods' do
+    it "can find items by their name" do
+      @m1 = create(:merchant)
+      @i1 = create(:item, :name => 'Turing Shirt', merchant_id: @m1.id)
+      @i2 = create(:item, :name => 'Cohort Ring', merchant_id: @m1.id)
+      @i3 = create(:item, :name => 'Zoom Background', merchant_id: @m1.id)
+
+      expect(Item.name_search('ring')).to include(@i1, @i2)
+      expect(Item.name_search('ring')).to_not include(@i3)
+
+      expect(Item.name_search('background')).to include(@i3)
+      expect(Item.name_search('background')).to_not include(@i1, @i2)
+    end
   end
 end
