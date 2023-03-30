@@ -12,4 +12,11 @@ class ErrorSerializer
     {data: {}}
   end
 
+  def self.negative_price_error
+    {errors: "Price cannot be less than 0"}
+  end
+
+  def self.unprocessable_error
+    {errors: "Cannot search by both name and price"}
+  end
 end
