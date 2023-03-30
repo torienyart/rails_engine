@@ -1,29 +1,14 @@
 class Api::V1::ItemsController < ApplicationController
   def index
      if params[:merchant_id]
-      begin
-        render json: ItemSerializer.new(Merchant.find(params[:merchant_id]).items)
-      rescue ActiveRecord::RecordNotFound => error
-        serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
-        render json: serialized_error, status: :not_found
-      end
+      render json: ItemSerializer.new(Merchant.find(params[:merchant_id]).items)
     else  
-      begin
-        render json: ItemSerializer.new(Item.all)      
-      rescue ActiveRecord::RecordNotFound => error
-        serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
-        render json: serialized_error, status: :not_found
-      end
+      render json: ItemSerializer.new(Item.all)      
     end
   end
 
   def show
-    begin
-      render json: ItemSerializer.new(Item.find(params[:id]))
-    rescue ActiveRecord::RecordNotFound => error
-      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
-      render json: serialized_error, status: :not_found
-    end
+    render json: ItemSerializer.new(Item.find(params[:id]))
   end
 
   def create
@@ -37,19 +22,14 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    begin
       item = Item.find(params[:id])
-    rescue ActiveRecord::RecordNotFound => error
-      serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
-      render json: serialized_error, status: :not_found
-    else
+  
       if item.update(item_params)
         serialized_item = render json: ItemSerializer.new(item)
       else
         serialized_errors = ItemErrorSerializer.new(item).serializable_hash[:data][:attributes]
         render json: serialized_errors, status: :not_found
       end
-    end
   end
 
   def destroy
@@ -57,15 +37,6 @@ class Api::V1::ItemsController < ApplicationController
     item.destroy_invoices
     item.destroy
   end
-
-  # def error_messager(to_render)
-  #   begin
-  #     to_render
-  #   rescue ActiveRecord::RecordNotFound => error
-  #     serialized_error = ErrorSerializer.new(error).serializable_hash[:data][:attributes]
-  #     render json: serialized_error, status: :not_found
-  #   end
-  # end
 
   private
 
