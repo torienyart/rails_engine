@@ -235,5 +235,49 @@ describe 'can create an items response' do
       expect(json[:data].first[:attributes][:description]).to eq(@i3.description)
       expect(json[:data].first[:attributes][:unit_price]).to eq(@i3.unit_price)
     end
+
+    it 'can find items by min and max price' do
+      get "/api/v1/items/find_all?max_price=50&min_price=5"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(200)
+      expect(json[:data].count).to eq(2)
+      expect(json[:data].first[:id]).to eq("#{@i3.id}")
+      expect(json[:data].first[:type]).to eq('item')
+      expect(json[:data].first[:attributes][:name]).to eq(@i3.name)
+      expect(json[:data].first[:attributes][:description]).to eq(@i3.description)
+      expect(json[:data].first[:attributes][:unit_price]).to eq(@i3.unit_price)
+    end
+
+    it "can return 200 status with undefined error if result doesn't exist" do
+      get '/api/v1/items/find_all?min_price=150'
+      json = JSON.parse(response.body, symbolize_names: true)
+      expect(response.status).to eq(200)
+      expect(json[:data]).to eq([])
+    end
+
+    it "can return 400 bad request if min price is less than 0" do
+      get '/api/v1/items/find_all?min_price=-2'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expect(json[:errors]).to eq("Price cannot be less than 0")
+    end
+
+    it "can return 400 bad request if max price is less than 0" do
+      get '/api/v1/items/find_all?max_price=-2'
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expect(json[:errors]).to eq("Price cannot be less than 0")
+    end
+
+    it "can return 400 bad request if both name and min_price are sent" do
+      get "/api/v1/items/find_all?name=ring&min_price=50&max_price=250"
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expect(json[:errors]).to eq("Cannot search by both name and price")
+    end
   end
 end
