@@ -7,4 +7,9 @@ class ErrorSerializer
   attribute :errors do |error|
     [error.message]
   end
+
+  def self.undefined_object
+    {data: {}}
+  end
+
 end

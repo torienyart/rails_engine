@@ -42,6 +42,33 @@ describe Item do
     @i5.destroy_invoices
   
     expect(@i5.invoices).to include(@iv2)
+  end
 
+  describe 'class methods' do
+
+    before :each do
+      @m1 = create(:merchant)
+      @i1 = create(:item, :name => 'Turing Shirt', unit_price: 55, merchant_id: @m1.id)
+      @i2 = create(:item, :name => 'Cohort Ring', unit_price: 50, merchant_id: @m1.id)
+      @i3 = create(:item, :name => 'Zoom Background', unit_price: 5, merchant_id: @m1.id)
+    end
+
+    it "can find items by their name" do
+      expect(Item.name_search('ring')).to include(@i1, @i2)
+      expect(Item.name_search('ring')).to_not include(@i3)
+
+      expect(Item.name_search('background')).to include(@i3)
+      expect(Item.name_search('background')).to_not include(@i1, @i2)
+    end
+
+    it "can find items by minimum price" do
+      expect(Item.price_search(50.00, nil)).to include(@i1, @i2)
+      expect(Item.price_search(50.00, nil)).to_not include(@i3)
+    end
+
+    it "can find items by maximum price" do
+      expect(Item.price_search(nil, 50.00)).to include(@i2, @i3)
+      expect(Item.price_search(nil, 50.00)).to_not include(@i1)
+    end
   end
 end

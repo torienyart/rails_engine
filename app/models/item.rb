@@ -12,4 +12,18 @@ class Item < ApplicationRecord
       invoice.destroy
     end
   end
+
+  def self.name_search(query_name)
+    where("lower(name) LIKE lower('%#{query_name}%')").order(:name)
+  end
+
+  def self.price_search(min, max)
+    if min.present? && max.present?
+      where("unit_price >= #{min}").where("unit_price <= #{max}").order(:unit_price)
+    elsif min.present? && !max.present?
+      where("unit_price >= #{min}").order(:unit_price)
+    elsif max.present? && !min.present?
+      where("unit_price <= #{max}").order(:unit_price)
+    end
+  end
 end
